@@ -1,0 +1,64 @@
+{% extends "base_lojista.html" %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+{% block content %}
+<style>
+    @media (max-width: 400px) {
+        #id_capa {
+        font-size: 14px;
+    } 
+
+    }
+
+</style>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-9 col-lg-7 m-2 p-2 " style="border-style: solid; border-color: #dd8d9f;">
+            <h1 class="text-center" >Nova Venda</h1>
+            <hr class="my-4">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="flex-row justify-content-center">
+                    <div class="mb-2 row danger">
+                        <label class="form-label col-12 col-sm-3 ">Veículo</label>
+                        <div class="col-12 col-sm-9">{{ veiculo }}</div>
+                    </div>
+
+                    <div class="mb-2 row danger">
+                        <label class="form-label col-12 col-sm-3 ">Valor</label>
+                        <div class="col-12 col-sm-9 text-danger">{{ form.valor_venda }}</div>
+                    </div>
+
+                    <div class="mb-2 row danger">
+                        <label class="form-label col-12 col-sm-3 ">Data</label>
+                        <div class="col-12 col-sm-9 text-danger">{{ form.data_venda }}</div>
+                    </div>
+
+                    <div class="mb-2 row danger">
+                        <label class="form-label col-12 col-sm-3 ">Comprador</label>
+                        <div class="col-12 col-sm-9">{{ form.comprador }}</div>
+                    </div>
+
+                    <div class="mb-2 row danger">
+                        <label class="form-label col-12 col-sm-3 ">Contato</label>
+                        <div class="col-12 col-sm-9">{{ form.contato }}</div>
+                    </div>
+
+                    <div class="mb-2 row danger">
+                        <label class="form-label col-12 col-sm-3 ">Observações</label>
+                        <div class="col-12 col-sm-9">{{ form.observacoes }}</div>
+                    </div>
+
+                    <div class="text-center m-2">
+                        <input type="submit" value="Alterar" class="btn btn-danger p-2 text-center ">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
+

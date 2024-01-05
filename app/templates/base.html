@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>{% block title %}Vila Costa Veículos{% endblock %}</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+<style>
+      .nav-link:hover {
+    color: #ff0000;
+}
+body {
+            min-height: 100vh; /* Faz com que o corpo da página ocupe pelo menos 100% da altura da viewport */
+            display: flex;
+            flex-direction: column;
+        }
+
+          .content {
+            flex: 1; /* Faz com que o conteúdo ocupe o espaço restante */
+        }
+</style>
+
+
+</head>
+<body>
+        <!-- NAVBAR  -->
+    <nav class="navbar navbar-expand-md  navbar-dark bg-dark">
+        <div class="container">
+            <a href="#" class="navbar-brand text-danger"><h1 class="">Vila Costa Veículos</h1></a>
+            
+            {% if user.is_authenticated %}            
+            <h3 class="navbar-text .text-white m-0">Olá, {{ user.username }}</h3>
+            
+            {% endif %}
+            <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-label="Expand Navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="nav">
+                <ul class="navbar-nav">
+                    <li class="navbar-item">
+                        <a href="#" class="nav-link" aria-current="page">
+                            Home
+                        </a>
+                    </li>
+
+
+
+                    {% if user.is_authenticated %}
+                    <li class="navbar-item">
+                        <a href="#" class="nav-link">
+                            Novo Carro
+                        </a>
+                    </li>
+                    <li class="navbar-item">
+                        <a href="#" class="nav-link">
+                            Sair
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="navbar-item">
+                        <a href="#" class="nav-link">
+                            Login
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+
+        </div>
+    </nav>
+  <main class="content">
+    {% block content %}
+    {% endblock %}
+  </main>
+
+        <!-- FOOTER  -->
+        <nav class="navbar p-4 mt-2 mt-md-3 navbar-expand-md   navbar-dark bg-dark">
+
+            <div class="container">
+                <p class="navbar-text align-self-center" style="margin: 0;">&copy; 2023 Vila Costa Veículos</p>
+
+                    <ul class="navbar-nav">
+                        <li class="navbar-item">
+                            <a href="#" class="nav-link">
+                                Home
+                            </a>
+                        </li>
+                        <li class="navbar-item">
+                            <a href="#" class="nav-link">
+                                Login
+                            </a>
+                        </li>
+
+                    </ul>
+
+
+            </div>
+        </nav>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+</body>
+
+</html>
