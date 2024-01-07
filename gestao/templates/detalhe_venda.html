@@ -1,0 +1,20 @@
+{% extends 'base_lojista.html' %}
+
+{% block title %}Detalhe da Venda{% endblock %}
+
+{% block content %}
+
+    <h1>Detalhe da Venda</h1>
+
+    <p><strong>ID:</strong> {{ venda.id }}</p>
+    <p><strong>Data:</strong> {{ venda.data_venda|date:"d-m-Y" }}</p>
+    <p><strong>Valor:</strong> {{ venda.valor_venda }}</p>
+    <p><strong>Comprador:</strong> {{ venda.comprador }}</p>
+    <p><strong>Contato:</strong> {{ venda.contato }}</p>
+    <p><strong>Observações:</strong> {{ venda.observacoes }}</p>
+    <p><strong>Veículo:</strong> {{ venda.veiculo }}</p>
+    <p><strong>Valor custo</strong>{{ venda.veiculo.valor_compra }}</p>
+    <a href="{% url 'lista_vendas' %}" class="btn btn-primary">Voltar</a>
+
+{% endblock %}
+```
