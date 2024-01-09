@@ -4,7 +4,7 @@ from django.db.models import Sum
 
 class Venda(models.Model):
     id = models.AutoField(primary_key=True)
-    veiculo = models.ForeignKey('veiculos.Veiculo', on_delete=models.PROTECT, related_name='venda_veiculo')
+    veiculo = models.OneToOneField('veiculos.Veiculo', on_delete=models.PROTECT, related_name='venda_veiculo')
     valor_venda = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     data_venda = models.DateField()
     comprador = models.CharField(max_length=50, blank=True, null=True)

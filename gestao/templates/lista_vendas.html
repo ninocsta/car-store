@@ -12,16 +12,16 @@
                     <div class="row justify-content-center">
                         <div class="col-6 col-lg-8 col-md-8 col-sm-6 row">
                             <div class="form-floating col-4">
-                                    <input type="text" name="search" id="search" class="form-control col" placeholder="Search">
+                                    <input type="text" name="search" id="search" class="form-control col" placeholder="Search" value="{{ request.GET.search|default:'' }}">
                                     <label class="form-label" for="Search">Buscar Veículo</label>                           
                             </div>
                             <div class="form-floating col-4">
-                                <input type="date" name="start_date" id="start_date" class="form-control col" placeholder="start_date">
+                                <input type="date" name="start_date" id="start_date" class="form-control col" placeholder="start_date" value="{{ request.GET.start_date|default:'' }}">
                                 <label for="start_date">Data Inicial</label>
                             </div>
 
                             <div class="form-floating col-4">
-                                <input type="date" name="end_date" id="end_date" class="form-control col" aria-label="Data-final">
+                                <input type="date" name="end_date" id="end_date" class="form-control col" aria-label="Data-final" value="{{ request.GET.end_date|default:'' }}">
                                 <label class="form-label" for="end_date">Data Final</label>
                             </div>
                         </div>
@@ -36,11 +36,7 @@
         
         <!-- END Search BAR-->
         
-        <div class="text-end">
-            <a href="#" class="btn btn-secondary">
-            <h3>Nova venda</h3>
-            </a>
-        </div>
+
     <table class="table table-striped">
         <thead>
             <tr>
@@ -61,49 +57,49 @@
                     <td>{{ venda.contato }}</td>
                     <td>{{ venda.observacoes }}</td>
                     <td>
-                        <a href="{% url 'detalhe_venda' venda.id %}" class="btn btn-danger">Editar</a>
+                        <a href="{% url 'resumo_venda' venda.id %}" class="btn btn-secondary">Resumo</a>
                     </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <!-- BEGIN: Pagination -->
+<!-- BEGIN: Pagination -->
 <nav aria-label="Page navigation example">
-    <ul class="pagination justify-content-center">
-      {% if page_obj.has_previous %}
-        <li class="page-item">
-          <a class="page-link" href="?page=1">&laquo; Primeira</a>
-        </li>
-        <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
-        </li>
-      {% else %}
-        <li class="page-item disabled">
-          <span class="page-link">Anterior</span>
-        </li>
-      {% endif %}
-  
+  <ul class="pagination justify-content-center">
+    {% if page_obj.has_previous %}
       <li class="page-item">
-        <span class="page-link current">
-          Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
-        </span>
+        <a class="page-link link-dark" href="?search={{ request.GET.search|default:'' }}&start_date={{ request.GET.start_date|default:'' }}&end_date={{ request.GET.end_date|default:'' }}&page=1"><i class="bi bi-chevron-double-left"></i></a>
       </li>
-  
-      {% if page_obj.has_next %}
-        <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.next_page_number }}">Próxima</a>
-        </li>
-        <li class="page-item">
-          <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Última &raquo;</a>
-        </li>
-      {% else %}
-        <li class="page-item disabled">
-          <span class="page-link">Próxima</span>
-        </li>
-      {% endif %}
-    </ul>
-  </nav>
-  <!-- END: Pagination -->
+      <li class="page-item">
+        <a class="page-link link-dark" href="?search={{ request.GET.search|default:'' }}&start_date={{ request.GET.start_date|default:'' }}&end_date={{ request.GET.end_date|default:'' }}&page={{ page_obj.previous_page_number }}"><i class="bi bi-arrow-left-circle"></i></a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <span class="page-link link-dark"><i class="bi bi-arrow-left-circle"></i></span>
+      </li>
+    {% endif %}
+
+    <li class="page-item">
+      <span class="page-link current link-dark">
+        {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+      </span>
+    </li>
+
+    {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link link-dark" href="?search={{ request.GET.search|default:'' }}&start_date={{ request.GET.start_date|default:'' }}&end_date={{ request.GET.end_date|default:'' }}&page={{ page_obj.next_page_number }}"><i class="bi bi-arrow-right-circle"></i></a>
+      </li>
+      <li class="page-item">
+        <a class="page-link link-dark" href="?search={{ request.GET.search|default:'' }}&start_date={{ request.GET.start_date|default:'' }}&end_date={{ request.GET.end_date|default:'' }}&page={{ page_obj.paginator.num_pages }}"><i class="bi bi-chevron-double-right"></i></a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <span class="page-link"><i class="bi bi-arrow-right-circle"></i></span>
+      </li>
+    {% endif %}
+  </ul>
+</nav>
+<!-- END: Pagination -->
 
 {% endblock %}

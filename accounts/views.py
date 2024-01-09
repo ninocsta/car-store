@@ -3,9 +3,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 # Create your views here.
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 def register_view(request):    
     if request.method == 'POST':
         user_form = UserCreationForm(request.POST)
@@ -20,6 +23,8 @@ def register_view(request):
 
 
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('lista_veiculos')
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
@@ -31,6 +36,7 @@ def login_view(request):
             messages.error(request, 'Nome de usuário ou senha incorretos.')
     login_form = AuthenticationForm()
     return render(request, 'login.html', {'login_form': login_form})
+
 
 def logout_view(request):
     logout(request)

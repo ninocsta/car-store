@@ -1,0 +1,51 @@
+{% extends 'base_lojista.html' %}
+
+
+
+
+
+{% block content %}
+<style>
+    li{
+        list-style: none;
+    }
+</style>
+<div>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="list-group col col-lg-8 col-xl-6">
+                    <h2  class="list-group-item">Resumo de venda</h2>
+                    <ul class="list-group-item">
+                        <li>Valor da venda: R$ {{ venda.valor_venda }}</li>
+                        <li>Veículo: {{ venda.veiculo }}</li>
+                        <li>Cliente: {{ venda.cliente }}</li>
+                        <li>Telefone: {{ venda.telefone }}</li>
+                        <li>Data da venda: {{ venda.data_venda }}</li>
+                    </ul>
+                    <h4 class="list-group-item">Manutenções</h4>
+                    <ul class="list-group-item">
+                        {% for manutencao in manutencoes %}
+                            <li>{{ manutencao.tipo }}</li>
+                            <li>Valor: R$ {{ manutencao.valor }}</li>
+                            <li>{{ manutencao.data }}</li>
+                            <br>
+                        {% endfor %}
+                    </ul>
+                    <h4 class="list-group-item">Subtotais</h4>
+                    <ul class="list-group-item">
+                        <li>Valor Venda: R$ {{ venda.valor_venda }}</li>
+                        <li>Valor da compra: R$ {{ veiculo.valor_compra }}</li>
+                        <li>Manutenções: R$ {{ total_manutencoes|floatformat:2 }}</li>
+                    </ul>
+                    <h3 class="list-group-item">Lucro: R$ {{ venda.lucro }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}

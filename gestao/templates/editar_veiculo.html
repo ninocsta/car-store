@@ -13,7 +13,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-12 col-md-9 col-lg-7 m-2 p-2 " style="border-style: solid; border-color: #dd8d9f;">
-            <h1 class="text-center" >Alterar Carro</h1>
+            <h1 class="text-center" >Editar</h1>
             <hr class="my-4">
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
@@ -88,6 +88,10 @@
 
                     <div class="text-center m-2">
                         <input type="submit" value="Alterar" class="btn btn-danger p-2 text-center ">
+                        <a href="/area_do_lojista/veiculos/" class="btn btn-danger p-2">Voltar</a>
+                    </div>
+                    <div class="text-center m-2">
+                        
                     </div>
                 </div>
             </form>
