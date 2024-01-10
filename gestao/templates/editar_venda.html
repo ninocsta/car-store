@@ -1,0 +1,59 @@
+{% extends "base_lojista.html" %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+{% block content %}
+<style>
+    @media (max-width: 400px) {
+        #id_capa {
+        font-size: 14px;
+    } 
+
+    }
+
+</style>
+<div class="container">
+    <div class="row justify-content-center m-">
+        <div class="col-12 col-md-9 col-lg-7 m-2 p-2 " style="border-style: solid; border-color: #dd8d9f;">
+            <h1 class="text-center" >Editar Venda</h1>
+            <hr class="my-4">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="flex-row justify-content-center">
+                    <div class="mb-2 row danger">
+                        <p>{{venda.veiculo}}</p>
+                    </div>
+                    {% for item in form %}
+                    <div class="mb-2 row danger">
+                        <label class="form-label col-12 col-sm-3 ">{{item.label}}</label>
+                        <div class="col-12 col-sm-9">{{ item }}</div>
+                    </div>
+                    {% endfor %}
+                    {% if form.errors %}
+                    <div class="mb-2 row danger">
+                        <p>Por favor, corrija os erros abaixo.</p>
+                    </div>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <div class="alert alert-danger">
+                                <strong>{{ field.label }}:</strong> {{ error|escape }}
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                {% endif %}
+
+
+
+                    <div class="text-center m-2">
+                        <input type="submit" value="Salvar" class="btn btn-danger p-2 text-center ">
+                        <a href="/area_do_lojista/vendas/" class="btn btn-danger p-2">Voltar</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
+

@@ -18,7 +18,14 @@ class Venda(models.Model):
         self.veiculo.vendido = True
         self.veiculo.save()
         super().save(*args, **kwargs)
-
+    
+    
+    def delete(self, *args, **kwargs):
+        self.veiculo.vendido = False
+        self.veiculo.save()
+        super().delete(*args, **kwargs)    
+ 
+ 
     @property
     def lucro(self):
         manutencoes = self.veiculo.veiculo_manutencao.all()
@@ -26,6 +33,7 @@ class Venda(models.Model):
         if valor_manutencoes is None:
             valor_manutencoes = 0
         return self.valor_venda - self.veiculo.valor_compra - valor_manutencoes
+
 
 class Tipo_Manutencao(models.Model):
     id = models.AutoField(primary_key=True)

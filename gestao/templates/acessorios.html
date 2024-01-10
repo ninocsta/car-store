@@ -1,0 +1,145 @@
+{% extends 'base_lojista.html' %}
+
+{% block content %}
+<!-- Search BAR-->       
+      
+<form method="GET" action="{% url 'lista_acessorios' %}" class="row  d-flex flex-wrap">
+
+
+    <div class="col-11 col-sm-5 col-md-4 col-lg-3 mb-2">
+      <div class="form-floating">
+          <input type="text" name="search" id="search" class="form-control" placeholder="Search" value="{{ request.GET.search|default:'' }}">
+          <label class="form-label" for="Search">Buscar Acessório</label>
+      </div>
+    </div>
+
+      <div class="col col-sm-2 align-self-center mb-2">
+          <button type="submit" class="btn btn-danger btn-lg ">Buscar</button>
+      </div>
+
+</form>            
+    <!-- Resto do seu código... -->
+    <table class="table table-responsive">
+        <thead>
+            <tr class="">
+                <th class="">
+                    <button class="btn" type="button" data-bs-toggle="modal" data-bs-target="#createModal"><i class="fa fa-cogs text-danger">Novo Acessório</i></button>
+                    <!-- Modal para criação -->
+                    <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="justify-content-center">
+                                    <h1 class="modal-title text-center">Novo Acessório</h1>
+                                </div>
+                                <form method="post" action="{% url 'novo_acessorio' %}" class="d-flex flex-column p-2 justify-content-center ">
+                                    {% csrf_token %}                    
+                                    <div class="text-center">
+                                        <label for="nome">Nome: </label>
+                                        <input type="text" name="nome" value="{{form.nome}}">
+                                    </div>                                    
+                                    <div class="text-center m-1 modal-footer">
+                                        <button class="btn btn-danger" type="submit">Criar</button>  
+                                </form> 
+                                    <button class="btn btn-danger" data-bs-dismiss="modal">Sair</button>                 
+                                    </div> 
+                            </div>
+                        </div>
+                    </div>
+                </th>                    
+                <th ><h4 class="m-0">Nome</h4></th>
+    
+            </tr>
+        </thead> 
+        <tbody>
+            {% for acessorio in acessorios %}                   
+                <tr class="">
+                    <td class="d-flex flex-nowrap">
+                        <button class="btn" type="button" data-bs-toggle="modal" data-bs-target="#editModal{{acessorio.id}}"><i class="bi bi-wrench"></i></button>
+                        <button class="btn" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal{{acessorio.id}}"> <i class="fa fa-trash link-offset-3-hover"></i></button>
+                    </td>                       
+                    <th class="" scope="row">{{ acessorio.nome }}</th>                 
+                </tr>
+       
+
+        </tbody>
+    
+
+    <!-- Modal para edição -->
+    <div class="modal fade" id="editModal{{acessorio.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="justify-content-center">
+                    <h1 class="modal-title text-center">Editar Acessório</h1>
+                </div>
+                <form method="post" action="{% url 'editar_acessorio' acessorio.id %}" class="d-flex p-2 justify-content-center ">
+                    {% csrf_token %}                    
+                    <div class="text-center"><input type="text" name="nome" value="{{acessorio.nome}}"></div>
+                    <div class="text-center m-1 modal-footer">
+                        <button class="btn btn-danger" type="submit">Salvar</button>  
+                </form> 
+                    <button class="btn btn-danger" data-bs-dismiss="modal">Sair</button>                 
+                    </div> 
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para exclusão -->
+    <div class="modal" id="deleteModal{{acessorio.id}}">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="justify-content-center">
+                    <h1 class="modal-title text-center">Excluir Acessório</h1>
+                </div>
+                <form method="post" action="{% url 'deletar_acessorio' acessorio.id %}" class="d-flex p-2 justify-content-center">
+                    {% csrf_token %}
+                    <div class="text-center"><p>{{ acessorio.nome }}</p></div>
+                      <p class="text-center">Tem certeza que deseja excluir este acessório?</p>
+                    
+                    <div class="text-center m-1 modal-footer">
+                        <button class="btn btn-danger" type="submit">Excluir</button>
+                                        </form>
+                                        <button class="btn btn-danger" data-bs-dismiss="modal">Sair</button>
+                    </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</table>
+<!-- BEGIN: Pagination -->
+<nav aria-label="Page navigation example">
+    <ul class="pagination ">
+      {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link link-dark" href="?search={{ request.GET.search|default:'' }}&page=1"><i class="bi bi-chevron-double-left"></i></a>
+        </li>
+        <li class="page-item">
+          <a class="page-link link-dark" href="?&search={{ request.GET.search|default:'' }}&page={{ page_obj.previous_page_number }}"><i class="bi bi-arrow-left-circle"></i></a>
+        </li>
+      {% else %}
+        <li class="page-item disabled">
+          <span class="page-link link-dark"><i class="bi bi-arrow-left-circle"></i></span>
+        </li>
+      {% endif %}
+  
+      <li class="page-item">
+        <span class="page-link current link-dark">
+          {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+        </span>
+      </li>
+  
+      {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link link-dark" href="?search={{ request.GET.search|default:'' }}&page={{ page_obj.next_page_number }}"><i class="bi bi-arrow-right-circle"></i></a>
+        </li>
+        <li class="page-item">
+          <a class="page-link link-dark" href="?search={{ request.GET.search|default:'' }}&page={{ page_obj.paginator.num_pages }}"><i class="bi bi-chevron-double-right"></i></a>
+        </li>
+      {% else %}
+        <li class="page-item disabled">
+          <span class="page-link"><i class="bi bi-arrow-right-circle"></i></span>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+  <!-- END: Pagination -->
+{% endblock %}

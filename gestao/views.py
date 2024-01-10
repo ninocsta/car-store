@@ -1,9 +1,9 @@
 import io
 from django.http import FileResponse
 from django.shortcuts import render
-from django.views.generic import ListView, UpdateView, CreateView, DetailView
-from veiculos.models import Veiculo, Fotos
-from gestao.models import Venda, Manutencao
+from django.views.generic import ListView, UpdateView, CreateView, DetailView, DeleteView
+from veiculos.models import Veiculo, Fotos, Acessorio, Marca
+from gestao.models import Venda, Manutencao, Tipo_Manutencao
 from django.shortcuts import redirect
 from gestao.forms import VendaForm, ManutencaoForm
 from .forms import VeiculoForm
@@ -17,6 +17,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import A4, landscape
+from django.urls import reverse_lazy
 # Create your views here.
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -24,7 +25,7 @@ class Lista_Veiculos(ListView):
     model = Veiculo
     template_name = 'lista_veiculos.html'
     context_object_name = 'veiculos'
-    paginate_by = 1  # Defina o número de itens por página aqui
+    paginate_by = 15  # Defina o número de itens por página aqui
     
     
     def get_queryset(self):
@@ -99,20 +100,6 @@ class Cadastrar_Veiculo(CreateView):
         return super().form_valid(form)
 
 
-@login_required(login_url='login')
-def vender_veiculo(request, id):
-    veiculo = get_object_or_404(Veiculo, id=id)
-    if request.method == 'POST':
-        form = VendaForm(request.POST)
-        if form.is_valid():
-            venda = form.save(commit=False)
-            venda.veiculo = veiculo
-            venda.save()
-            return redirect('lista_veiculos')
-    else:
-        form = VendaForm()
-    return render(request, 'vender_veiculo.html', {'form': form, 'veiculo': veiculo})
-
 
 def gerar_pdf(request):
     vendas = Venda.objects.all()
@@ -165,6 +152,22 @@ def gerar_pdf(request):
     return FileResponse(buffer, as_attachment=True, filename='vendas.pdf')
 
 
+
+@login_required(login_url='login')
+def vender_veiculo(request, id):
+    veiculo = get_object_or_404(Veiculo, id=id)
+    if request.method == 'POST':
+        form = VendaForm(request.POST)
+        if form.is_valid():
+            venda = form.save(commit=False)
+            venda.veiculo = veiculo
+            venda.save()
+            return redirect('lista_veiculos')
+    else:
+        form = VendaForm()
+    return render(request, 'vender_veiculo.html', {'form': form, 'veiculo': veiculo})
+
+
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class Lista_Vendas(ListView):
     model = Venda
@@ -173,7 +176,6 @@ class Lista_Vendas(ListView):
     paginate_by = 15
 
 
-    
     def get_queryset(self):
         venda = super(Lista_Vendas, self).get_queryset()
         search = self.request.GET.get('search')
@@ -200,12 +202,34 @@ class Lista_Vendas(ListView):
         return venda
 
 
-@method_decorator(login_required(login_url='login'), name='dispatch')   
-class Detalhes_Venda(DetailView):
+
+class Resumo_Venda(DetailView):
+    model = Venda
+    template_name = 'resumo_venda.html'
+    context_object_name = 'venda'
+    success_url = '/area_do_lojista/vendas/'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        venda = self.get_object()
+        context['veiculo'] = venda.veiculo
+        context['manutencoes'] = venda.veiculo.veiculo_manutencao.all()
+        context ['total_manutencoes'] = venda.veiculo.veiculo_manutencao.all().aggregate(Sum('valor'))['valor__sum'] or 0
+    
+        return context
+
+
+class VendaUpdateView(UpdateView):
     model = Venda
     form_class = VendaForm
-    template_name = 'detalhe_venda.html'
+    template_name = 'editar_venda.html'
     success_url = '/area_do_lojista/vendas/'
+
+
+    
+class VendaDeleteView(DeleteView):
+    model = Venda
+    success_url = reverse_lazy('lista_vendas')
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -213,7 +237,7 @@ class Lista_Manutencao(ListView):
     model = Manutencao
     template_name = 'lista_manutencoes.html'
     context_object_name = 'manutencoes'
-    paginate_by = 1
+    paginate_by = 15
     
     def get_queryset(self):
         manutencao = super(Lista_Manutencao, self).get_queryset()
@@ -241,6 +265,17 @@ class Lista_Manutencao(ListView):
         return manutencao
 
 
+class ManutencaoUpdateView(UpdateView):
+    model = Manutencao
+    form_class = ManutencaoForm
+    template_name = 'editar_manutencao.html'
+    success_url = '/area_do_lojista/manutencoes/'
+
+
+class ManutencaoDeleteView(DeleteView):
+    model = Manutencao
+    success_url = reverse_lazy('manutencoes')
+
 @login_required(login_url='login')
 def nova_manutencao(request, id):
     veiculo = get_object_or_404(Veiculo, id=id)
@@ -264,18 +299,31 @@ def dashboard(request):
     ano_atual = timezone.now().year
     mes_atual = timezone.now().month
 
-    total_vendas_mes = Venda.objects.filter(data_venda__month=mes_atual).aggregate(Sum('valor_venda'))
-    total_custo_mes = Veiculo.objects.filter(venda_veiculo__data_venda__month=mes_atual).aggregate(Sum('valor_compra'))
-    total_manutencoes_por_veiculo_vendido_no_mes = Manutencao.objects.filter(veiculo__venda_veiculo__data_venda__month=mes_atual).aggregate(Sum('valor'))
-    lucro = total_vendas_mes['valor_venda__sum'] - total_custo_mes['valor_compra__sum'] - total_manutencoes_por_veiculo_vendido_no_mes['valor__sum'] 
-    
+    total_vendas_ano = Venda.objects.filter(data_venda__year=ano_atual).count()
+
+
+    total_vendas_mes = Venda.objects.filter(data_venda__month=mes_atual).aggregate(Sum('valor_venda'))['valor_venda__sum']
+    total_vendas_mes = total_vendas_mes if total_vendas_mes is not None else 0
+
+    total_custo_mes = Veiculo.objects.filter(venda_veiculo__data_venda__month=mes_atual).aggregate(Sum('valor_compra'))['valor_compra__sum']
+    total_custo_mes = total_custo_mes if total_custo_mes is not None else 0
+
+    total_manutencoes_por_veiculo_vendido_no_mes = Manutencao.objects.filter(veiculo__venda_veiculo__data_venda__month=mes_atual).aggregate(Sum('valor'))['valor__sum']
+    total_manutencoes_por_veiculo_vendido_no_mes = total_manutencoes_por_veiculo_vendido_no_mes if total_manutencoes_por_veiculo_vendido_no_mes is not None else 0
+
+    lucro = total_vendas_mes - total_custo_mes - total_manutencoes_por_veiculo_vendido_no_mes
+
+
+
+
+
+
+
+
+
+
     total_vendidos = veiculos.filter(vendido=True, venda_veiculo__data_venda__month=mes_atual).count()
     total_disponiveis = veiculos.filter(vendido=False).count()
-
-    custo_mes_veiculo = Veiculo.objects.filter(venda_veiculo__data_venda__month=mes_atual)
-
-
-
     
     vendas_por_mes = []
 
@@ -289,24 +337,121 @@ def dashboard(request):
     for mes in range(1, 13):
         vendas_mensais = Venda.objects.filter(data_venda__year=ano_atual, data_venda__month=mes)
         total_vendas_mes = vendas_mensais.aggregate(Sum('valor_venda'))['valor_venda__sum'] or 0
-        custo_mensal = Veiculo.objects.filter(venda_veiculo__data_venda__year=ano_atual, venda_veiculo__data_venda__month=mes).aggregate(Sum('valor_compra'))['valor_compra__sum'] or 0
+        custo_mensal = Veiculo.objects.filter(venda_veiculo__data_venda__year=ano_atual, venda_veiculo__data_venda__month=mes).aggregate(Sum('valor_compra')) ['valor_compra__sum'] or 0
         manutencoes_mensais = Manutencao.objects.filter(veiculo__venda_veiculo__data_venda__year=ano_atual, veiculo__venda_veiculo__data_venda__month=mes).aggregate(Sum('valor'))['valor__sum'] or 0
-        lucro_por_mes.append(total_vendas_mes - custo_mensal - manutencoes_mensais)
+        lucro_por_mes.append(total_vendas_mes - custo_mensal - manutencoes_mensais) or 0
 
-    return render(request, 'dashboard.html', {'total_vendas_mes': total_vendas_mes,  'total_vendidos': total_vendidos, 'total_disponiveis': total_disponiveis,  'lucro': lucro, 'lucro_por_mes': lucro_por_mes, 'vendas': vendas})
+    return render(request, 'dashboard.html', {'total_vendas_mes': total_vendas_mes,  'total_vendidos': total_vendidos, 'total_disponiveis': total_disponiveis,  'lucro': lucro, 'lucro_por_mes': lucro_por_mes, 'vendas': vendas, 'total_vendas_ano': total_vendas_ano})
 
 
-class Resumo_Venda(DetailView):
-    model = Venda
-    template_name = 'resumo_venda.html'
-    context_object_name = 'venda'
-    success_url = '/area_do_lojista/vendas/'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        venda = self.get_object()
-        context['veiculo'] = venda.veiculo
-        context['manutencoes'] = venda.veiculo.veiculo_manutencao.all()
-        context ['total_manutencoes'] = venda.veiculo.veiculo_manutencao.all().aggregate(Sum('valor'))['valor__sum'] or 0
-    
-        return context
+
+class AcessorioListView(ListView):
+    model = Acessorio
+    template_name = 'acessorios.html'
+    context_object_name = 'acessorios'
+    paginate_by = 15
+
+    def get_queryset(self):
+        acessorio = super(AcessorioListView, self).get_queryset()
+        search = self.request.GET.get('search')
+
+        if search:
+            acessorio = acessorio.filter(nome__icontains=search).order_by('nome')
+        else:
+            acessorio = acessorio.order_by('nome')
+        
+        return acessorio
+
+
+class AcessorioCreateView(CreateView):
+    model = Acessorio
+    fields = ['nome']  # Adicione os campos que você quer editar
+    success_url = reverse_lazy('lista_acessorios')
+
+
+class AcessorioUpdateView(UpdateView):
+    model = Acessorio
+    fields = ['nome']  # Adicione os campos que você quer editar
+    success_url = reverse_lazy('lista_acessorios')
+
+
+class AcessorioDeleteView(DeleteView):
+    model = Acessorio
+    success_url = reverse_lazy('lista_acessorios')
+
+
+
+class TipoManutencaoListView(ListView):
+
+
+    model = Tipo_Manutencao
+    template_name = 'tipo_manutencao.html'
+    context_object_name = 'manutencoes'
+    paginate_by = 15
+
+    def get_queryset(self):
+        manutencao = super(TipoManutencaoListView, self).get_queryset()
+        search = self.request.GET.get('search')
+
+        if search:
+            manutencao = manutencao.filter(nome__icontains=search).order_by('nome')
+        else:
+            manutencao = manutencao.order_by('nome')
+        
+        return manutencao
+
+
+class TipoManutencaoCreateView(CreateView):
+    model = Tipo_Manutencao
+    fields = ['nome']  # Adicione os campos que você quer editar
+    success_url = reverse_lazy('lista_tipos_manutencao')
+
+
+class TipoManutencaoUpdateView(UpdateView):
+
+
+    model = Tipo_Manutencao
+    fields = ['nome']  # Adicione os campos que você quer editar
+    success_url = reverse_lazy('lista_tipos_manutencao')
+
+
+class TipoManutencaoDeleteView(DeleteView):
+
+    model = Tipo_Manutencao
+    success_url = reverse_lazy('lista_tipos_manutencao')
+
+
+class MarcaListView(ListView):
+    model = Marca
+    template_name = 'marcas.html'
+    context_object_name = 'marcas'
+    paginate_by = 15
+
+    def get_queryset(self):
+        marca = super(MarcaListView, self).get_queryset()
+        search = self.request.GET.get('search')
+
+        if search:
+            marca = marca.filter(nome__icontains=search).order_by('nome')
+        else:
+            marca = marca.order_by('marca')
+        
+        return marca
+
+
+class MarcaCreateView(CreateView):
+    model = Marca
+    fields = ['nome']  # Adicione os campos que você quer editar
+    success_url = reverse_lazy('lista_marcas')
+
+
+class MarcaUpdateView(UpdateView):
+    model = Marca
+    fields = ['nome']  # Adicione os campos que você quer editar
+    success_url = reverse_lazy('lista_marcas')
+
+
+class MarcaDeleteView(DeleteView):
+    model = Marca
+    success_url = reverse_lazy('lista_marcas')
