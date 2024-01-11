@@ -47,7 +47,7 @@
             {% for manutencao in manutencoes %}
                 <tr>
                   <td class="d-flex flex-nowrap">
-                    <a href="{% url 'editar_manutencao' manutencao.id %}"><button class="btn" type="button"><i class="bi bi-wrench"></i></button></a>
+                    <a href="{% url 'editar_manutencao' manutencao.id %}"><button class="btn" type="button"><i class="bi bi-pencil-fill"></i></button></a>
                     <button class="btn" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal{{manutencao.id}}"> <i class="fa fa-trash link-offset-3-hover"></i></button>
                   </td>  
                     <th scope="row">{{ manutencao.veiculo }}</th>
