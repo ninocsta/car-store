@@ -77,7 +77,7 @@ a{
                 {% if veiculos %}
                 {% for veiculo in veiculos %}                    
                     <tr class="">
-                        <td class="d-flex flex-nowrap">
+                        <td class="d-flex flex-nowrapninocs">
                           <a href="/area_do_lojista/editar_veiculo/{{veiculo.id}}/" class="mr-2 link-dark"><i class="bi bi-pencil-fill link-offset-3-hover"></i></a>
                           <a href="/area_do_lojista/nova_manutencao/{{veiculo.id}}/" class="link-dark mr-2"><i class="bi bi-wrench"></i></a>
                           {% if not veiculo.vendido %}

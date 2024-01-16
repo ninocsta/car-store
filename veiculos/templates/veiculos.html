@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+            <!-- Search BAR-->
+    <div class="container p-3 justify-content-center">
+        <form method="GET" action="{% url 'veiculos' %}" class="row  justify-content-center">
+            <div class="col-7 col-xl-3 col-lg-4 col-md-5 col-sm-6">
+                <div class="form-floating">
+                    <input type="text" name="search" id="search" class="form-control" placeholder="Search">
+                    <label class="form-label" for="Search">Buscar Carro</label>
+                </div>
+            </div>
+            <div class="col-3 col-lg-1 col-md-2 col-sm-4 align-self-center">
+                <button type="submit" class="btn btn-danger btn-lg ">Buscar</button>
+
+            </div>
+
+
+          </form>
+    </div>
+
+
+            <!-- CARDS -->
+    <div class="container">
+        <div class="row g-4 row-cols-1 row-cols-md-2 row-cols-lg-3">
+              {% if veiculos %}
+                {% for veiculo in veiculos %}
+                    <div class="col">
+                        <div class="card" >
+                            {% if veiculo.foto_capa %}
+                            <img src="{{ veiculo.foto_capa.url }}" alt="{{ veiculo.modelo }} - {{ veiculo.marca }}" class="card-image" style="max-height: 270px;">
+                        {% else %}
+                            <!-- Exibir uma imagem padrão ou nada -->
+                        {% endif %}                            
+                        <div class="card-body">
+
+                              <div class="row">
+                                  <h3 class="card-title col align-content-between">
+                                      {{ veiculo.modelo }}
+                                  </h3>
+                                  <h5 class="col text-end">{{ veiculo.km }}KM</h5>
+                              </div>
+                              <div class="row">
+                                <p class="col fw-bolder">{{ car.ano|floatformat:0 }}</p>
+                                  <p class="card-text text-end col"><a href="{% url 'dados_veiculo' veiculo.id %}" class="btn btn-danger text-end">Detalhes</a></p>
+                                
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                {% else %}
+                  <p class="no-results">Nenhum veículo encontrado.</p>
+    {% endif %}
+        </div>
+    </div>
+
+
+
+
+
+
+{% endblock %}
