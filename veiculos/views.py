@@ -1,3 +1,4 @@
+from calendar import c
 from re import search
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
@@ -26,4 +27,8 @@ class DadosVeiculoView(DetailView):
         context = super(DadosVeiculoView, self).get_context_data(**kwargs)
         context['fotos'] = Fotos.objects.filter(veiculo=self.object)
         return context
-    
+
+
+def home(request):
+    veiculos = Veiculo.objects.filter(vendido=False)[:6]
+    return render(request, 'home.html', context={'veiculos': veiculos})

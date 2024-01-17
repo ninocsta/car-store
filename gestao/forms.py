@@ -1,5 +1,6 @@
 from django import forms
 from matplotlib import widgets
+from matplotlib.pylab import f
 from veiculos.models import Veiculo, Fotos
 from gestao.models import Venda, Manutencao
 
@@ -20,11 +21,17 @@ class VendaForm(forms.ModelForm):
     class Meta:
         model = Venda
         fields = '__all__'
-        exclude = ['veiculo']   
+        exclude = ['veiculo']  
+        widgets = {
 
+            'data_venda': forms.DateInput(attrs={'type': 'date'}),
+        }
 
 class ManutencaoForm(forms.ModelForm):
     class Meta:
         model = Manutencao
         fields = '__all__'
         exclude = ['veiculo']
+        widgets = {
+            'data': forms.DateInput(attrs={'type': 'date'}),
+        }

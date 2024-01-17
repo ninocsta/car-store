@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %} 
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"><style>
+
+    .foto {
+        background-image: url("{% static 'a.png' %}");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        height: 35vh;
+
+    }
+
+</style>
+
+
+    <div class="container foto">
+        <h1 class="text-center p-3 text-danger">Seja bem vindo(a)!</h1>
+
+
+    </div>
+    <div class="container mb-4">
+        
+            <h1 class="text-center">Confira as últimas novidades: </h1>
+              <!-- CARDS -->
+    
+        <div class="row g-4 row-cols-1 row-cols-md-2 row-cols-lg-3">
+              {% if veiculos %}
+                {% for veiculo in veiculos %}
+                    <div class="col">
+                        <div class="card" >
+                            {% if veiculo.foto_capa %}
+                            <img src="{{ veiculo.foto_capa.url }}" alt="{{ veiculo.modelo }} - {{ veiculo.marca }}" class="card-image" style="max-height: 270px;">
+                        {% else %}
+                            <!-- Exibir uma imagem padrão ou nada -->
+                        {% endif %}                            
+                        <div class="card-body">
+
+                              <div class="row">
+                                  <h3 class="card-title col align-content-between">
+                                      {{ veiculo.modelo }}
+                                  </h3>
+                                  <h5 class="col text-end">{{ veiculo.km }}KM</h5>
+                              </div>
+                              <div class="row">
+                                <p class="col fw-bolder">{{ car.ano|floatformat:0 }}</p>
+                                  <p class="card-text text-end col"><a href="{% url 'dados_veiculo' veiculo.id %}" class="btn btn-danger text-end">Detalhes</a></p>
+                                
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                {% else %}
+                  <p class="no-results">Nenhum veículo encontrado.</p>
+    {% endif %}
+        </div>
+    
+
+       
+    </div>
+
+
+
+
+    <div class="container">
+        <div class="row">
+            <div class="card text-bg-dark pt-3 col">
+                <div class="card-header"></div>
+                <div class="card-body">
+                  <h1 class="card-title text-center">Precisando de Financiamento ?</h1>
+                  <p class="card-text text-center">Temos as melhores opões de financiamento para você.</p>
+                </div>
+                <div class="card-footer text-end">
+                    <a href="#" class="btn btn-light ">Saiba Mais</a>
+                </div>
+              </div>
+        </div>
+    </div>
+
+    <div class="container mb-0">        
+        <div class="row ">
+            <div class="card text-bg-light text-center col" >
+                <div class="card-body">
+                  <h1 class="card-title text-dark">Procurando carro 0KM?</h1>
+                  <p class="card-text text-dark">Aqui, na Vila Costa Veículos, temos o carro que você procura!</p>
+                  <a href="#" class="btn btn-danger">Entre em contato</a>
+                </div>
+              </div>                  
+        </div>            
+</div>
+{% endblock %}
+```

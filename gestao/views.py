@@ -15,7 +15,6 @@ from reportlab.pdfgen import canvas
 from django import forms
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
 from reportlab.lib.pagesizes import A4, landscape
 from django.urls import reverse_lazy
 # Create your views here.
@@ -102,7 +101,14 @@ class Cadastrar_Veiculo(CreateView):
 
 
 def gerar_pdf(request):
-    vendas = Venda.objects.all()
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if start_date and end_date:
+        vendas = Venda.objects.filter(data_venda__range=[start_date, end_date])
+    else:
+        vendas = Venda.objects.all()
+        
     buffer = io.BytesIO()
 
     # Configurar o tamanho da página e o buffer
@@ -225,6 +231,13 @@ class VendaUpdateView(UpdateView):
     template_name = 'editar_venda.html'
     success_url = '/area_do_lojista/vendas/'
 
+    def get_initial(self):
+        initial = super().get_initial()
+        venda = self.get_object()
+        initial['data_venda'] = venda.data_venda.strftime('%Y-%m-%d')
+        return initial
+
+
 
     
 class VendaDeleteView(DeleteView):
@@ -270,6 +283,13 @@ class ManutencaoUpdateView(UpdateView):
     form_class = ManutencaoForm
     template_name = 'editar_manutencao.html'
     success_url = '/area_do_lojista/manutencoes/'
+
+    def get_initial(self):
+        initial = super().get_initial()
+        manutencao = self.get_object()
+        initial['data'] = manutencao.data.strftime('%Y-%m-%d')
+        return initial
+
 
 
 class ManutencaoDeleteView(DeleteView):

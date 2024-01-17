@@ -4,7 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic.base import RedirectView
 from accounts.views import login_view, logout_view
-from veiculos.views import VeiculoList, DadosVeiculoView
+from veiculos.views import VeiculoList, DadosVeiculoView, home
 from gestao.views import gerar_pdf
 from gestao.urls import urlpatterns
 
@@ -12,7 +12,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
-    path('', RedirectView.as_view(url='/veiculos')),
+    path('', RedirectView.as_view(url='/home')),
+    path('home/', home, name='home'),
     path('area_do_lojista/', include('gestao.urls')),    
     path('gerar_pdf/', gerar_pdf, name='gerar_pdf'),
     path('veiculos/', VeiculoList.as_view(), name='veiculos'),
