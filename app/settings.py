@@ -14,9 +14,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ou4t6@a*!-o5vtm#*u7)f12f1fl9^+k)m%ec3bjws6-q5jtiyx'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['ninocsta.pythonanywhere.com']
 
 
 # Application definition
@@ -48,7 +48,7 @@ ROOT_URLCONF = 'app.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['app/templates'],
+        'DIRS': ['car-store/app/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -110,12 +110,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+STATIC_ROOT = '/home/ninocsta/car-project/static'
 
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = '/home/ninocsta/car-project/media'
 MEDIA_URL = '/media/'
 
 # Default primary key field type
