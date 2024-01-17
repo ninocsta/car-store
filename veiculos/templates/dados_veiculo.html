@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<style>
+
+.carousel-indicators{
+position: relative;
+margin-top: 10px;
+bottom: 0px;
+flex-wrap: wrap;
+}
+.carousel-indicators .list-photo{
+height: 60px;
+width: 80px;
+}
+.carousel-indicators .list-photo img{
+height: 60px;
+width: 80px;
+}
+
+</style>
+
+<!--Primeira Linha Detalhes/Carrossel-->
+<div class="container">    
+    <div class="row justify-content-center flex-wrap-reverse p-0 p-sm-0">
+        <!-- Detalhes do Carro-->
+      <div class="col-12 col-lg-5 ">
+        <h1 class="text-center p-3">{{ veiculo.marca }} {{ veiculo.modelo }}</h1>
+        <div class="row">
+              <div class="col-md-12 p-0">
+                <ul class="list-group ">
+                    <li class="list-group-item">
+                        <div class="row  my-1">
+                            <p class="col m-0 fw-bolder">Marca:</p>
+                            <p class="col m-0 fw-bolder text-end text-danger">{{ veiculo.marca }} </p>
+                        </div>
+                    </li>
+                     <li class="list-group-item">
+                         <div class="row my-1">
+                             <p class="col m-0 fw-bolder">KM: </p>
+                             <p class="col m-0 fw-bolder text-end text-danger">{{ veiculo.km }}</p>
+                         </div>
+                     </li>
+                     <li class="list-group-item">
+                         <div class="row my-1">
+                             <p class="col m-0 fw-bolder">Câmbio: </p>
+                             <p class="col m-0 fw-bolder text-end text-danger">{{ veiculo.cambio }}</p>
+                         </div>
+                     </li>
+                  <li class="list-group-item">
+                      <div class="row my-1">
+                          <p class="col m-0 fw-bolder">Ano:</p>
+                          <p class="col m-0 fw-bolder text-end text-danger">{{ veiculo.ano }}</p>
+                      </div>
+                  </li>
+                  <li class="list-group-item">
+                      <div class="row my-1">
+                          <p class="col m-0 fw-bolder">Cor: </p>
+                          <p class="col m-0 fw-bolder text-end text-danger">{{ veiculo.cor }}</p>
+                      </div>
+                  </li>
+                  <li class="list-group-item">
+                      <div class="row my-1">
+                          <p class="col m-0 fw-bolder">Direção:</p>
+                          <p class="col m-0 fw-bolder text-end text-danger">{{ veiculo.direcao }}</p>
+                      </div>
+                  </li>
+                </ul>
+              </div>
+        </div>
+      </div>
+    <!-- FIM Detalhes do Carro  -->
+
+    <!-- CARROSSEL -->
+        <div class="col-lg-7 col-md-12 col-xs-12 py-2">
+            <div id="carouselExampleIndicators" class="carousel slide"  data-bs-ride="carousel">
+                <!--data-ride="carousel"-->
+                <div class="carousel-inner">
+
+                    <div class="carousel-item active">
+                        <img class="d-block w-100 img-fluid" src="{{ veiculo.foto_capa.url }}" alt="Terceiro Slide" height="">
+                    </div>
+                    {%  for foto in fotos  %}
+                        <div class="carousel-item">
+                            <img class="d-block w-100 img-fluid" src="{{ foto.foto.url }}" alt="Primeiro Slide" height="">
+                        </div>
+                    {%  endfor  %}
+                    <button type="button" class="carousel-control-prev" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Anterior</span>
+                    </button>
+                    <button type="button" class="carousel-control-next" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Próximo</span>
+                    </button>
+                </div>
+                <div class="carousel-indicators m-0">
+                    <button type="button" data-bs-target="#carouselExampleIndicators"
+                            data-bs-slide-to="0" class="active list-photo"><img class="d-block w-100" src="{{ veiculo.foto_capa.url }}"></button>
+                    {% for foto in fotos %}
+                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ forloop.counter }}" class="list-photo"><img class="d-block w-100 mw-100" src="{{ foto.foto.url }}"></button>
+                    {% endfor %}
+                </div>
+                <div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Opcionais e DAdos/cadastro-->
+<div class="container">
+    <!-- OPCIONAIS  -->
+    <div class="row justify-content-center flex-wrap">
+
+        <div class="col-12 col-lg-5">
+            <h1 class="text-center p-1">Opcionais</h1>
+            <div class="row">
+                <div class="col-12 col-md-6 p-0">
+                    <ul class="list-group">
+                        {% for acessorio in veiculo.acessorios.all %}
+                        <li class="list-group-item"><i class="bi bi-check2-all"></i> {{ acessorio.nome }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>                
+            </div>
+        </div>
+    
+        <div class="col-lg-7 col-md-12 col-xs-12 pt-3 pb-2 text-center ">
+            <a href="https://wa.me/1234567890" class="btn btn-success m-1" target="_blank">
+                <i class="bi bi-whatsapp"></i> Contatar via WhatsApp
+            </a>            
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

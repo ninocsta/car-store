@@ -19,51 +19,48 @@ body {
           .content {
             flex: 1; /* Faz com que o conteúdo ocupe o espaço restante */
         }
+        .nav-link:hover,  .nav-link.active {
+    color: var(--danger);
+}
 </style>
 
 
 </head>
 <body>
         <!-- NAVBAR  -->
-    <nav class="navbar navbar-expand-md  navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-md  navbar-dark bg-dark bg-gradient">
         <div class="container">
-            <a href="#" class="navbar-brand text-danger"><h1 class="">Vila Costa Veículos</h1></a>
-            
-            {% if user.is_authenticated %}            
-            <h3 class="navbar-text .text-white m-0">Olá, {{ user.username }}</h3>
-            
-            {% endif %}
+            <a href="{% url 'veiculos' %}" class="navbar-brand text-danger"><h1 class="">Vila Costa Veículos</h1></a>
+
             <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-label="Expand Navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="nav">
                 <ul class="navbar-nav">
                     <li class="navbar-item">
-                        <a href="#" class="nav-link" aria-current="page">
-                            Home
-                        </a>
-                    </li>
-
-
-
-                    {% if user.is_authenticated %}
-                    <li class="navbar-item">
-                        <a href="#" class="nav-link">
-                            Novo Carro
+                        <a href="#" class="nav-link text-light" aria-current="page">
+                            HOME
                         </a>
                     </li>
                     <li class="navbar-item">
-                        <a href="#" class="nav-link">
-                            Sair
+                        <a href="#" class="nav-link text-light" aria-current="page">
+                            USADOS
                         </a>
                     </li>
-                    {% else %}
                     <li class="navbar-item">
-                        <a href="#" class="nav-link">
-                            Login
+                        <a href="#" class="nav-link text-light" aria-current="page">
+                            NOVOS
                         </a>
                     </li>
-                    {% endif %}
+                    <li class="navbar-item">
+                        <a href="#" class="nav-link text-light" aria-current="page">
+                            FINANCIAMENTO
+                        </a>   
+                    </li>
+                    <li class="navbar-item">
+                        <a href="#" class="nav-link text-light" aria-current="page">
+                            CONTATO
+                        </a>
                 </ul>
             </div>
 
