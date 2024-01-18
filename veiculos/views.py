@@ -30,5 +30,5 @@ class DadosVeiculoView(DetailView):
 
 
 def home(request):
-    veiculos = Veiculo.objects.filter(vendido=False)[:6]
+    veiculos = Veiculo.objects.filter(vendido=False)[:3]
     return render(request, 'home.html', context={'veiculos': veiculos})

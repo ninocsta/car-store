@@ -15,12 +15,8 @@
 </style>
 
 
-    <div class="container foto">
-        <h1 class="text-center p-3 text-danger">Seja bem vindo(a)!</h1>
 
-
-    </div>
-    <div class="container mb-4">
+    <div class="container pt-2 pb-4">
         
             <h1 class="text-center">Confira as últimas novidades: </h1>
               <!-- CARDS -->
@@ -52,43 +48,60 @@
                         </div>
                     </div>
                 {% endfor %}
+
                 {% else %}
                   <p class="no-results">Nenhum veículo encontrado.</p>
     {% endif %}
         </div>
-    
+        <div class="text-center">
+            
+            <a href="#" class="btn btn-danger mt-4 p-2">VER TODO O ESTOQUE <i class="bi bi-chevron-double-right"></i></a>
+        </div>
 
        
     </div>
 
 
-
-
     <div class="container">
         <div class="row">
-            <div class="card text-bg-dark pt-3 col">
-                <div class="card-header"></div>
-                <div class="card-body">
-                  <h1 class="card-title text-center">Precisando de Financiamento ?</h1>
+            <div class="card text-bg-dark p-5 col">
+                <div class="row g-0">
+                <div class="col-md-4">
+                    <img class="img-fluid rounded-start" src="{% static 'images/aperto.avif' %}" alt="">
+                </div>
+                <div class="card-body col-md-8">
+                  <h1 class="card-title text-center">Pensando em financiar ?</h1>
                   <p class="card-text text-center">Temos as melhores opões de financiamento para você.</p>
+                  <p class="card-text text-center">Carros novos, usados, o que você precisar!</p>
+                  <h4 class="card-text text-center">Simule já seu financiamento!</h4>
+                  <p class="text-center"><a href="#" class="btn btn-light mt-4 ">Saiba Mais</a></p>
                 </div>
-                <div class="card-footer text-end">
-                    <a href="#" class="btn btn-light ">Saiba Mais</a>
-                </div>
+                   
               </div>
+            </div>
         </div>
     </div>
 
-    <div class="container mb-0">        
+    <div class="container mt-3 mb-3">        
         <div class="row ">
-            <div class="card text-bg-light text-center col" >
-                <div class="card-body">
-                  <h1 class="card-title text-dark">Procurando carro 0KM?</h1>
-                  <p class="card-text text-dark">Aqui, na Vila Costa Veículos, temos o carro que você procura!</p>
-                  <a href="#" class="btn btn-danger">Entre em contato</a>
+            <div class="card text-center p-5" >
+                <div class="row g-0">
+                    <div class="card-body col-md-8">
+                        <h1 class="card-title text-dark">Procurando carro 0KM?</h1>
+                        <p class="card-text text-dark fs-5">Aqui, na Vila Costa Veículos, temos várias opçoes de carro NOVO para você.</p>  
+                        <p class="card-text text-dark fs-5">São muuuitas marcas e modelos diferentes.</p> 
+                        <h4 class="card-text text-dark">Tá esperando o que ? compre já seu carro ZERO!</h4>
+
+                        <a href="#" class="btn btn-danger mt-2">Entre em contato</a>
+                    </div>
+                    <div class="col-md-4">
+                        <img class="img-fluid rounded-start" src="{% static 'images/0km.jpg' %}" alt="">
+                    </div>
                 </div>
               </div>                  
-        </div>            
+        </div>          
 </div>
+
+
 {% endblock %}
 ```
