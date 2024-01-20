@@ -6,10 +6,12 @@
 <title>{% block title %}Vila Costa Veículos{% endblock %}</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+
 <style>
       .nav-link:hover {
-    color: #ff0000;
+    color: #ff0000 !important;
 }
+
 body {
             min-height: 100vh; /* Faz com que o corpo da página ocupe pelo menos 100% da altura da viewport */
             display: flex;
@@ -20,7 +22,8 @@ body {
             flex: 1; /* Faz com que o conteúdo ocupe o espaço restante */
         }
         .nav-link:hover,  .nav-link.active {
-    color: var(--danger);
+    color: #ff0000 !important;  
+    
 }
 </style>
 
@@ -30,7 +33,7 @@ body {
         <!-- NAVBAR  -->
     <nav class="navbar navbar-expand-md  navbar-dark bg-dark bg-gradient">
         <div class="container">
-            <a href="{% url 'veiculos' %}" class="navbar-brand text-danger"><h1 class="">Vila Costa Veículos</h1></a>
+            <a href="{% url 'home' %}" class="navbar-brand text-danger"><h1 class="">Vila Costa Veículos</h1></a>
 
             <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-label="Expand Navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -38,18 +41,21 @@ body {
             <div class="collapse navbar-collapse justify-content-end" id="nav">
                 <ul class="navbar-nav">
                     <li class="navbar-item">
-                        <a href="#" class="nav-link text-light" aria-current="page">
-                            HOME
+                        <a href="{% url 'home' %}" class="nav-link text-light
+                        {% if request.resolver_match.url_name == 'home' %}
+                        active {% endif %}" aria-current="page">
+                            INÍCIO
+                        </a>
+                    </li>
+                    <li class="navbar-item">
+                        <a href="{% url 'veiculos' %}" class="nav-link text-light {% if request.resolver_match.url_name == 'veiculos' %}
+                        active {% endif %}" aria-current="page">
+                            VEÍCULOS
                         </a>
                     </li>
                     <li class="navbar-item">
                         <a href="#" class="nav-link text-light" aria-current="page">
-                            USADOS
-                        </a>
-                    </li>
-                    <li class="navbar-item">
-                        <a href="#" class="nav-link text-light" aria-current="page">
-                            NOVOS
+                            CARRO 0KM
                         </a>
                     </li>
                     <li class="navbar-item">
@@ -78,17 +84,17 @@ body {
                 <p class="navbar-text align-self-center" style="margin: 0;">&copy; 2023 Vila Costa Veículos</p>
 
                     <ul class="navbar-nav">
-                        <li class="navbar-item">
-                            <a href="#" class="nav-link">
-                                Home
+                        <li class="navbar-item me-3">
+                            <a href="#" class=" btn btn-light">
+                               Entre em contato <i class="bi bi-whatsapp"></i>
                             </a>
-                        </li>
-                        <li class="navbar-item">
-                            <a href="#" class="nav-link">
-                                Login
-                            </a>
-                        </li>
-
+                        </li>  
+                        <li class="navbar-item text-white align-self-center">
+                            
+                                <i class="bi bi-building"></i> Endereço:
+                               Av Thomas Costa, 1650 Centro, Lagoão - RS
+                            
+                        </li>   
                     </ul>
 
 

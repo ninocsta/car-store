@@ -10,7 +10,7 @@ class VeiculoList(ListView):
     model = Veiculo
     template_name = 'veiculos.html'
     context_object_name = 'veiculos'
-    paginate_by = 3
+    paginate_by = 9
     def get_queryset(self):
         queryset = super(VeiculoList, self).get_queryset()
         q = self.request.GET.get('q', '')
