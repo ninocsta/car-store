@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %} 
+{% load static %}
 {% block content %}
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"><style>
 
@@ -17,10 +17,10 @@
 
 
     <div class="container pt-2 pb-4">
-        
+
             <h1 class="text-center">Confira as últimas novidades: </h1>
               <!-- CARDS -->
-    
+
         <div class="row g-4 row-cols-1 row-cols-md-2 row-cols-lg-3">
               {% if veiculos %}
                 {% for veiculo in veiculos %}
@@ -30,7 +30,7 @@
                             <img src="{{ veiculo.foto_capa.url }}" alt="{{ veiculo.modelo }} - {{ veiculo.marca }}" class="card-image" style="max-height: 270px;">
                         {% else %}
                             <!-- Exibir uma imagem padrão ou nada -->
-                        {% endif %}                            
+                        {% endif %}
                         <div class="card-body">
 
                               <div class="row">
@@ -42,7 +42,7 @@
                               <div class="row">
                                 <p class="col fw-bolder">{{ car.ano|floatformat:0 }}</p>
                                   <p class="card-text text-end col"><a href="{% url 'dados_veiculo' veiculo.id %}" class="btn btn-danger text-end">Detalhes</a></p>
-                                
+
                               </div>
                             </div>
                         </div>
@@ -54,11 +54,11 @@
     {% endif %}
         </div>
         <div class="text-center">
-            
+
             <a href="#" class="btn btn-danger mt-4 p-2">VER TODO O ESTOQUE <i class="bi bi-chevron-double-right"></i></a>
         </div>
 
-       
+
     </div>
 
 
@@ -76,20 +76,20 @@
                   <h4 class="card-text text-center">Simule já seu financiamento!</h4>
                   <p class="text-center"><a href="#" class="btn btn-light mt-4 ">Saiba Mais</a></p>
                 </div>
-                   
+
               </div>
             </div>
         </div>
     </div>
 
-    <div class="container mt-3 mb-3">        
+    <div class="container mt-3 mb-3">
         <div class="row ">
             <div class="card text-center p-5" >
                 <div class="row g-0">
                     <div class="card-body col-md-8">
                         <h1 class="card-title text-dark">Procurando carro 0KM?</h1>
-                        <p class="card-text text-dark fs-5">Aqui, na Vila Costa Veículos, temos várias opçoes de carro NOVO para você.</p>  
-                        <p class="card-text text-dark fs-5">São muuuitas marcas e modelos diferentes.</p> 
+                        <p class="card-text text-dark fs-5">Aqui, na Vila Costa Veículos, temos várias opçoes de carro NOVO para você.</p>
+                        <p class="card-text text-dark fs-5">São muuuitas marcas e modelos diferentes.</p>
                         <h4 class="card-text text-dark">Tá esperando o que ? compre já seu carro ZERO!</h4>
 
                         <a href="#" class="btn btn-danger mt-2">Entre em contato</a>
@@ -98,8 +98,8 @@
                         <img class="img-fluid rounded-start" src="{% static 'images/0km.jpg' %}" alt="">
                     </div>
                 </div>
-              </div>                  
-        </div>          
+              </div>
+        </div>
 </div>
 
 
