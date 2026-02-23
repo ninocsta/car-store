@@ -19,6 +19,30 @@ from reportlab.lib.pagesizes import A4, landscape
 from django.urls import reverse_lazy
 # Create your views here.
 
+
+def get_loja_usuario(user):
+    if user.is_superuser:
+        return None
+    if not hasattr(user, 'perfil'):
+        return -1
+    return user.perfil.loja_id
+
+
+def filtrar_por_loja(queryset, user, caminho_loja='loja_id'):
+    loja_id = get_loja_usuario(user)
+    if loja_id is None:
+        return queryset
+    if loja_id == -1:
+        return queryset.none()
+    return queryset.filter(**{caminho_loja: loja_id})
+
+
+def usuario_tem_acesso_veiculo(user, veiculo):
+    loja_id = get_loja_usuario(user)
+    if loja_id is None:
+        return True
+    return loja_id != -1 and veiculo.loja_id == loja_id
+
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class Lista_Veiculos(ListView):
     model = Veiculo
@@ -28,7 +52,7 @@ class Lista_Veiculos(ListView):
     
     
     def get_queryset(self):
-        veiculo = super(Lista_Veiculos, self).get_queryset()
+        veiculo = filtrar_por_loja(super(Lista_Veiculos, self).get_queryset(), self.request.user)
         search = self.request.GET.get('search')
         vendido = self.request.GET.get('vendido')
 
@@ -49,6 +73,9 @@ class Lista_Veiculos(ListView):
     
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class Editar_Veiculo(UpdateView):
+    def get_queryset(self):
+        return filtrar_por_loja(super().get_queryset(), self.request.user)
+
     model = Veiculo
     form_class = VeiculoForm
     template_name = 'editar_veiculo.html'
@@ -65,7 +92,11 @@ class Editar_Veiculo(UpdateView):
     def form_valid(self, form):
         context = self.get_context_data()
         fotos = context['fotos']
-        self.object = form.save()
+        self.object = form.save(commit=False)
+        if not self.request.user.is_superuser and hasattr(self.request.user, 'perfil'):
+            self.object.loja = self.request.user.perfil.loja
+        self.object.save()
+        form.save_m2m()
         if fotos.is_valid():
             fotos.instance = self.object
             fotos.save()
@@ -92,7 +123,11 @@ class Cadastrar_Veiculo(CreateView):
     def form_valid(self, form):
         context = self.get_context_data()
         fotos = context['fotos']
-        self.object = form.save()
+        self.object = form.save(commit=False)
+        if not self.request.user.is_superuser and hasattr(self.request.user, 'perfil'):
+            self.object.loja = self.request.user.perfil.loja
+        self.object.save()
+        form.save_m2m()
         if fotos.is_valid():
             fotos.instance = self.object
             fotos.save()
@@ -105,9 +140,9 @@ def gerar_pdf(request):
     end_date = request.GET.get('end_date')
 
     if start_date and end_date:
-        vendas = Venda.objects.filter(data_venda__range=[start_date, end_date])
+        vendas = filtrar_por_loja(Venda.objects.all(), request.user, 'veiculo__loja_id').filter(data_venda__range=[start_date, end_date])
     else:
-        vendas = Venda.objects.all()
+        vendas = filtrar_por_loja(Venda.objects.all(), request.user, 'veiculo__loja_id')
         
     buffer = io.BytesIO()
 
@@ -161,7 +196,7 @@ def gerar_pdf(request):
 
 @login_required(login_url='login')
 def vender_veiculo(request, id):
-    veiculo = get_object_or_404(Veiculo, id=id)
+    veiculo = get_object_or_404(filtrar_por_loja(Veiculo.objects.all(), request.user), id=id)
     if request.method == 'POST':
         form = VendaForm(request.POST)
         if form.is_valid():
@@ -183,7 +218,7 @@ class Lista_Vendas(ListView):
 
 
     def get_queryset(self):
-        venda = super(Lista_Vendas, self).get_queryset()
+        venda = filtrar_por_loja(super(Lista_Vendas, self).get_queryset(), self.request.user, 'veiculo__loja_id')
         search = self.request.GET.get('search')
         start_date = self.request.GET.get('start_date')
         end_date = self.request.GET.get('end_date')
@@ -210,6 +245,9 @@ class Lista_Vendas(ListView):
 
 
 class Resumo_Venda(DetailView):
+    def get_queryset(self):
+        return filtrar_por_loja(super().get_queryset(), self.request.user, 'veiculo__loja_id')
+
     model = Venda
     template_name = 'resumo_venda.html'
     context_object_name = 'venda'
@@ -226,6 +264,9 @@ class Resumo_Venda(DetailView):
 
 
 class VendaUpdateView(UpdateView):
+    def get_queryset(self):
+        return filtrar_por_loja(super().get_queryset(), self.request.user, 'veiculo__loja_id')
+
     model = Venda
     form_class = VendaForm
     template_name = 'editar_venda.html'
@@ -241,6 +282,9 @@ class VendaUpdateView(UpdateView):
 
     
 class VendaDeleteView(DeleteView):
+    def get_queryset(self):
+        return filtrar_por_loja(super().get_queryset(), self.request.user, 'veiculo__loja_id')
+
     model = Venda
     success_url = reverse_lazy('lista_vendas')
 
@@ -253,7 +297,7 @@ class Lista_Manutencao(ListView):
     paginate_by = 15
     
     def get_queryset(self):
-        manutencao = super(Lista_Manutencao, self).get_queryset()
+        manutencao = filtrar_por_loja(super(Lista_Manutencao, self).get_queryset(), self.request.user, 'veiculo__loja_id')
         search = self.request.GET.get('search')
         start_date = self.request.GET.get('start_date')
         end_date = self.request.GET.get('end_date') 
@@ -279,6 +323,9 @@ class Lista_Manutencao(ListView):
 
 
 class ManutencaoUpdateView(UpdateView):
+    def get_queryset(self):
+        return filtrar_por_loja(super().get_queryset(), self.request.user, 'veiculo__loja_id')
+
     model = Manutencao
     form_class = ManutencaoForm
     template_name = 'editar_manutencao.html'
@@ -293,12 +340,15 @@ class ManutencaoUpdateView(UpdateView):
 
 
 class ManutencaoDeleteView(DeleteView):
+    def get_queryset(self):
+        return filtrar_por_loja(super().get_queryset(), self.request.user, 'veiculo__loja_id')
+
     model = Manutencao
     success_url = reverse_lazy('manutencoes')
 
 @login_required(login_url='login')
 def nova_manutencao(request, id):
-    veiculo = get_object_or_404(Veiculo, id=id)
+    veiculo = get_object_or_404(filtrar_por_loja(Veiculo.objects.all(), request.user), id=id)
     if request.method == 'POST':
         form = ManutencaoForm(request.POST)
         if form.is_valid():
@@ -314,21 +364,21 @@ def nova_manutencao(request, id):
 
 @login_required(login_url='login')
 def dashboard(request):
-    veiculos = Veiculo.objects.all()
-    vendas = Venda.objects.all().order_by('-data_venda')[:5]
+    veiculos = filtrar_por_loja(Veiculo.objects.all(), request.user)
+    vendas = filtrar_por_loja(Venda.objects.all(), request.user, 'veiculo__loja_id').order_by('-data_venda')[:5]
     ano_atual = timezone.now().year
     mes_atual = timezone.now().month
 
-    total_vendas_ano = Venda.objects.filter(data_venda__year=ano_atual).count()
+    total_vendas_ano = filtrar_por_loja(Venda.objects.all(), request.user, 'veiculo__loja_id').filter(data_venda__year=ano_atual).count()
 
 
-    total_vendas_mes = Venda.objects.filter(data_venda__month=mes_atual).aggregate(Sum('valor_venda'))['valor_venda__sum']
+    total_vendas_mes = filtrar_por_loja(Venda.objects.all(), request.user, 'veiculo__loja_id').filter(data_venda__month=mes_atual).aggregate(Sum('valor_venda'))['valor_venda__sum']
     total_vendas_mes = total_vendas_mes if total_vendas_mes is not None else 0
 
-    total_custo_mes = Veiculo.objects.filter(venda_veiculo__data_venda__month=mes_atual).aggregate(Sum('valor_compra'))['valor_compra__sum']
+    total_custo_mes = filtrar_por_loja(Veiculo.objects.all(), request.user).filter(venda_veiculo__data_venda__month=mes_atual).aggregate(Sum('valor_compra'))['valor_compra__sum']
     total_custo_mes = total_custo_mes if total_custo_mes is not None else 0
 
-    total_manutencoes_por_veiculo_vendido_no_mes = Manutencao.objects.filter(veiculo__venda_veiculo__data_venda__month=mes_atual).aggregate(Sum('valor'))['valor__sum']
+    total_manutencoes_por_veiculo_vendido_no_mes = filtrar_por_loja(Manutencao.objects.all(), request.user, 'veiculo__loja_id').filter(veiculo__venda_veiculo__data_venda__month=mes_atual).aggregate(Sum('valor'))['valor__sum']
     total_manutencoes_por_veiculo_vendido_no_mes = total_manutencoes_por_veiculo_vendido_no_mes if total_manutencoes_por_veiculo_vendido_no_mes is not None else 0
 
     lucro = total_vendas_mes - total_custo_mes - total_manutencoes_por_veiculo_vendido_no_mes
@@ -348,17 +398,17 @@ def dashboard(request):
     vendas_por_mes = []
 
     for mes in range(1, 13):
-        vendas_mensais = Venda.objects.filter(data_venda__year=ano_atual, data_venda__month=mes)
+        vendas_mensais = filtrar_por_loja(Venda.objects.all(), request.user, 'veiculo__loja_id').filter(data_venda__year=ano_atual, data_venda__month=mes)
         total_vendas_mes = vendas_mensais.aggregate(Sum('valor_venda'))['valor_venda__sum'] or 0
         vendas_por_mes.append(total_vendas_mes)
 
     lucro_por_mes = []
 
     for mes in range(1, 13):
-        vendas_mensais = Venda.objects.filter(data_venda__year=ano_atual, data_venda__month=mes)
+        vendas_mensais = filtrar_por_loja(Venda.objects.all(), request.user, 'veiculo__loja_id').filter(data_venda__year=ano_atual, data_venda__month=mes)
         total_vendas_mes = vendas_mensais.aggregate(Sum('valor_venda'))['valor_venda__sum'] or 0
-        custo_mensal = Veiculo.objects.filter(venda_veiculo__data_venda__year=ano_atual, venda_veiculo__data_venda__month=mes).aggregate(Sum('valor_compra')) ['valor_compra__sum'] or 0
-        manutencoes_mensais = Manutencao.objects.filter(veiculo__venda_veiculo__data_venda__year=ano_atual, veiculo__venda_veiculo__data_venda__month=mes).aggregate(Sum('valor'))['valor__sum'] or 0
+        custo_mensal = filtrar_por_loja(Veiculo.objects.all(), request.user).filter(venda_veiculo__data_venda__year=ano_atual, venda_veiculo__data_venda__month=mes).aggregate(Sum('valor_compra')) ['valor_compra__sum'] or 0
+        manutencoes_mensais = filtrar_por_loja(Manutencao.objects.all(), request.user, 'veiculo__loja_id').filter(veiculo__venda_veiculo__data_venda__year=ano_atual, veiculo__venda_veiculo__data_venda__month=mes).aggregate(Sum('valor'))['valor__sum'] or 0
         lucro_por_mes.append(total_vendas_mes - custo_mensal - manutencoes_mensais) or 0
 
     return render(request, 'dashboard.html', {'total_vendas_mes': total_vendas_mes,  'total_vendidos': total_vendidos, 'total_disponiveis': total_disponiveis,  'lucro': lucro, 'lucro_por_mes': lucro_por_mes, 'vendas': vendas, 'total_vendas_ano': total_vendas_ano})

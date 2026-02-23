@@ -19,7 +19,7 @@ class FotosInline(admin.TabularInline):
 
 @admin.register(Veiculo)
 class VeiculoAdmin(admin.ModelAdmin):
-    list_display = ('marca', 'modelo', 'placa', 'ano',)
+    list_display = ('loja', 'marca', 'modelo', 'placa', 'ano',)
     list_filter = ('modelo', 'vendido',)
     inlines = [FotosInline,]
     
@@ -31,7 +31,6 @@ class VeiculoAdmin(admin.ModelAdmin):
 
 admin.site.register(Marca, MarcaAdmin)
 admin.site.register(Acessorio, AcessorioAdmin)
-
 
 
 
