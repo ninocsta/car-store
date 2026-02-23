@@ -20,6 +20,7 @@ class Acessorio(models.Model):
 
 class Veiculo(models.Model):
     id = models.AutoField(primary_key=True)
+    loja = models.ForeignKey('accounts.Loja', on_delete=models.PROTECT, related_name='veiculos', null=True, blank=True)
     marca = models.ForeignKey(Marca, on_delete=models.PROTECT, related_name='marca')
     modelo = models.CharField(max_length=50)
     ano = models.IntegerField(blank=True, null=True)
